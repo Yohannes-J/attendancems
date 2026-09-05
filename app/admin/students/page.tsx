@@ -166,7 +166,7 @@ export default function StudentsPage() {
   const deptCards = departments;
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* ── Header ── */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -215,7 +215,7 @@ export default function StudentsPage() {
         <div className="text-center py-20 text-gray-400">Loading…</div>
       ) : !selectedDept ? (
         /* ── Department Cards View ── */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
           {deptCards.length === 0 ? (
             <p className="text-gray-400 col-span-4 text-center py-16">No departments yet. Add departments first.</p>
           ) : deptCards.map((dept) => {

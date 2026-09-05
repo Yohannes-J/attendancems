@@ -10,7 +10,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
   return (
     <div className="flex min-h-screen">
       <Sidebar role="teacher" userName={session.user?.name ?? "Teacher"} />
-      <main className="flex-1 overflow-auto">{children}</main>
+      <main className="flex-1 overflow-auto pt-14 lg:pt-0">{children}</main>
     </div>
   );
 }
