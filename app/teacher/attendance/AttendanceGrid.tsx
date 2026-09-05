@@ -257,7 +257,7 @@ export default function AttendanceGrid({
   // No courses assigned to this teacher
   if (courses.length === 0) {
     return (
-      <div className="p-8">
+      <div className="p-4 md:p-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Attendance</h1>
         <div className="bg-white rounded-xl border border-orange-100 shadow-sm p-10 text-center mt-8">
           <div className="text-4xl mb-3">📋</div>
@@ -271,9 +271,9 @@ export default function AttendanceGrid({
   }
 
   return (
-    <div className="p-6">
+    <div className="p-3 md:p-6">
       {/* Header */}
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Attendance</h1>          {selectedCourse && (
             <p className="text-sm text-gray-500 mt-0.5">
