@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
 
-interface School {
-  _id: string;
-  name: string;
-  address?: string;
-}
+interface School { _id: string; name: string; address?: string; }
 
 export default function SchoolsPage() {
   const [schools, setSchools] = useState<School[]>([]);
@@ -21,52 +18,32 @@ export default function SchoolsPage() {
   async function load() {
     setLoading(true);
     const res = await fetch("/api/schools");
-    const data = await res.json();
-    setSchools(data);
+    setSchools(await res.json());
     setLoading(false);
   }
 
   useEffect(() => { load(); }, []);
 
-  function openAdd() {
-    setEditing(null);
-    setForm({ name: "", address: "" });
-    setError("");
-    setModalOpen(true);
-  }
-
-  function openEdit(s: School) {
-    setEditing(s);
-    setForm({ name: s.name, address: s.address ?? "" });
-    setError("");
-    setModalOpen(true);
-  }
+  function openAdd() { setEditing(null); setForm({ name: "", address: "" }); setError(""); setModalOpen(true); }
+  function openEdit(s: School) { setEditing(s); setForm({ name: s.name, address: s.address ?? "" }); setError(""); setModalOpen(true); }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
-    setError("");
+    setSaving(true); setError("");
     const url = editing ? `/api/schools/${editing._id}` : "/api/schools";
     const method = editing ? "PUT" : "POST";
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
     setSaving(false);
-    if (!res.ok) {
-      const d = await res.json();
-      setError(d.error ?? "Failed to save");
-      return;
-    }
-    setModalOpen(false);
-    load();
+    if (!res.ok) { const d = await res.json(); setError(d.error ?? "Failed"); toast.error(d.error ?? "Failed to save"); return; }
+    toast.success(editing ? "School updated" : "School added");
+    setModalOpen(false); load();
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this school? This may affect departments and courses.")) return;
-    await fetch(`/api/schools/${id}`, { method: "DELETE" });
-    load();
+    if (!confirm("Delete this school?")) return;
+    const res = await fetch(`/api/schools/${id}`, { method: "DELETE" });
+    if (res.ok) { toast.success("School deleted"); load(); }
+    else toast.error("Failed to delete");
   }
 
   return (

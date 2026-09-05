@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface CourseInfo {
   _id: string;
@@ -220,6 +221,7 @@ export default function AttendanceGrid({
 
     setSaving(false);
     setSaved(true);
+    toast.success("Attendance saved");
     setTimeout(() => setSaved(false), 3000);
   }
 

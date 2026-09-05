@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
 
 interface School { _id: string; name: string; }
 interface Teacher { _id: string; name: string; email: string; school?: School; }
@@ -19,61 +20,38 @@ export default function TeachersPage() {
   async function load() {
     setLoading(true);
     try {
-      const [tRes, sRes] = await Promise.all([
-        fetch("/api/teachers"),
-        fetch("/api/schools"),
-      ]);
+      const [tRes, sRes] = await Promise.all([fetch("/api/teachers"), fetch("/api/schools")]);
       if (!tRes.ok) throw new Error(`Teachers API: ${tRes.status}`);
       if (!sRes.ok) throw new Error(`Schools API: ${sRes.status}`);
       setTeachers(await tRes.json());
       setSchools(await sRes.json());
-    } catch (err) {
-      console.error("Load error:", err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   }
 
   useEffect(() => { load(); }, []);
 
-  function openAdd() {
-    setEditing(null);
-    setForm({ name: "", email: "", password: "", school: "" });
-    setError("");
-    setModalOpen(true);
-  }
-
-  function openEdit(t: Teacher) {
-    setEditing(t);
-    setForm({ name: t.name, email: t.email, password: "", school: t.school?._id ?? "" });
-    setError("");
-    setModalOpen(true);
-  }
+  function openAdd() { setEditing(null); setForm({ name: "", email: "", password: "", school: "" }); setError(""); setModalOpen(true); }
+  function openEdit(t: Teacher) { setEditing(t); setForm({ name: t.name, email: t.email, password: "", school: t.school?._id ?? "" }); setError(""); setModalOpen(true); }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
-    setError("");
+    setSaving(true); setError("");
     const url = editing ? `/api/teachers/${editing._id}` : "/api/teachers";
     const method = editing ? "PUT" : "POST";
-    const body = editing
-      ? { name: form.name, email: form.email, school: form.school }
-      : { name: form.name, email: form.email, password: form.password, school: form.school };
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const body = editing ? { name: form.name, email: form.email, school: form.school } : { name: form.name, email: form.email, password: form.password, school: form.school };
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     setSaving(false);
-    if (!res.ok) { setError((await res.json()).error ?? "Failed"); return; }
-    setModalOpen(false);
-    load();
+    if (!res.ok) { const d = await res.json(); setError(d.error ?? "Failed"); toast.error(d.error ?? "Failed to save"); return; }
+    toast.success(editing ? "Teacher updated" : "Teacher account created");
+    setModalOpen(false); load();
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this teacher?")) return;
-    await fetch(`/api/teachers/${id}`, { method: "DELETE" });
-    load();
+    const res = await fetch(`/api/teachers/${id}`, { method: "DELETE" });
+    if (res.ok) { toast.success("Teacher deleted"); load(); }
+    else toast.error("Failed to delete");
   }
 
   return (
