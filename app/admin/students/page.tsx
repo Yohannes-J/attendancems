@@ -266,77 +266,90 @@ export default function StudentsPage() {
               {search ? "No students match your search." : "No students in this department yet."}
             </div>
           ) : (
-            <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-100">
-                  <tr>
-                    <th className="text-left px-6 py-3 font-medium text-gray-600">ID</th>
-                    <th className="text-left px-6 py-3 font-medium text-gray-600">Name</th>
-                    <th className="text-left px-6 py-3 font-medium text-gray-600">Email</th>
-                    <th className="text-left px-6 py-3 font-medium text-gray-600">Phone</th>
-                    <th className="text-left px-6 py-3 font-medium text-gray-600">Block</th>
-                    <th className="text-left px-6 py-3 font-medium text-gray-600">Dorm No.</th>
-                    <th className="text-right px-6 py-3 font-medium text-gray-600">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-50">
-                  {paginated.map((s) => (
-                    <tr key={s._id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-3">
-                        <span className="bg-gray-100 text-gray-700 text-xs font-mono px-2 py-0.5 rounded">{s.studentId}</span>
-                      </td>
-                      <td className="px-6 py-3 font-medium text-gray-900">{s.name}</td>
-                      <td className="px-6 py-3 text-gray-500">{s.email}</td>
-                      <td className="px-6 py-3 text-gray-500">{s.phone ?? "—"}</td>
-                      <td className="px-6 py-3 text-gray-500">{s.block ?? "—"}</td>
-                      <td className="px-6 py-3 text-gray-500">{s.dormNumber ?? "—"}</td>
-                      <td className="px-6 py-3 text-right space-x-2">
-                        <button onClick={() => openEdit(s)} className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
-                        <button onClick={() => handleDelete(s._id)} className="text-red-500 hover:text-red-700 font-medium">Delete</button>
-                      </td>
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+                <table className="w-full text-sm">
+                  <thead className="bg-gray-50 border-b border-gray-100">
+                    <tr>
+                      <th className="text-left px-6 py-3 font-medium text-gray-600">ID</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-600">Name</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-600">Email</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-600">Phone</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-600">Block</th>
+                      <th className="text-left px-6 py-3 font-medium text-gray-600">Dorm No.</th>
+                      <th className="text-right px-6 py-3 font-medium text-gray-600">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between px-6 py-3 bg-gray-50 border-t border-gray-100">
-                  <p className="text-xs text-gray-500">
-                    Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, searchFiltered.length)} of {searchFiltered.length}
-                  </p>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => setPage((p) => Math.max(1, p - 1))}
-                      disabled={page === 1}
-                      className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      ← Prev
-                    </button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                      <button
-                        key={p}
-                        onClick={() => setPage(p)}
-                        className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${
-                          p === page
-                            ? "bg-indigo-600 text-white border-indigo-600"
-                            : "border-gray-200 text-gray-600 hover:bg-gray-100"
-                        }`}
-                      >
-                        {p}
-                      </button>
+                  </thead>
+                  <tbody className="divide-y divide-gray-50">
+                    {paginated.map((s) => (
+                      <tr key={s._id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-3"><span className="bg-gray-100 text-gray-700 text-xs font-mono px-2 py-0.5 rounded">{s.studentId}</span></td>
+                        <td className="px-6 py-3 font-medium text-gray-900">{s.name}</td>
+                        <td className="px-6 py-3 text-gray-500">{s.email}</td>
+                        <td className="px-6 py-3 text-gray-500">{s.phone ?? "—"}</td>
+                        <td className="px-6 py-3 text-gray-500">{s.block ?? "—"}</td>
+                        <td className="px-6 py-3 text-gray-500">{s.dormNumber ?? "—"}</td>
+                        <td className="px-6 py-3 text-right space-x-2">
+                          <button onClick={() => openEdit(s)} className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
+                          <button onClick={() => handleDelete(s._id)} className="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                        </td>
+                      </tr>
                     ))}
-                    <button
-                      onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                      disabled={page === totalPages}
-                      className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-                    >
-                      Next →
-                    </button>
+                  </tbody>
+                </table>
+                {/* Pagination inside desktop table */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between px-6 py-3 bg-gray-50 border-t border-gray-100">
+                    <p className="text-xs text-gray-500">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, searchFiltered.length)} of {searchFiltered.length}</p>
+                    <div className="flex items-center gap-1">
+                      <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40">← Prev</button>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                        <button key={p} onClick={() => setPage(p)} className={`px-3 py-1.5 text-xs rounded-lg border transition-colors ${p === page ? "bg-indigo-600 text-white border-indigo-600" : "border-gray-200 text-gray-600 hover:bg-gray-100"}`}>{p}</button>
+                      ))}
+                      <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40">Next →</button>
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+
+              {/* Mobile cards */}
+              <div className="md:hidden space-y-3">
+                {paginated.map((s) => (
+                  <div key={s._id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <span className="bg-gray-100 text-gray-700 text-xs font-mono px-2 py-0.5 rounded">{s.studentId}</span>
+                          <p className="font-semibold text-gray-900 text-sm">{s.name}</p>
+                        </div>
+                        <p className="text-xs text-gray-500 truncate">{s.email}</p>
+                        <div className="flex gap-3 mt-1 text-xs text-gray-400">
+                          {s.phone && <span>📞 {s.phone}</span>}
+                          {s.block && <span>Block {s.block}</span>}
+                          {s.dormNumber && <span>Dorm {s.dormNumber}</span>}
+                        </div>
+                      </div>
+                      <div className="flex gap-3 shrink-0">
+                        <button onClick={() => openEdit(s)} className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Edit</button>
+                        <button onClick={() => handleDelete(s._id)} className="text-red-500 hover:text-red-700 font-medium text-sm">Delete</button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {/* Mobile pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between py-2">
+                    <p className="text-xs text-gray-500">{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, searchFiltered.length)} of {searchFiltered.length}</p>
+                    <div className="flex gap-2">
+                      <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40">← Prev</button>
+                      <span className="px-3 py-1.5 text-xs text-gray-500">{page}/{totalPages}</span>
+                      <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1.5 text-xs rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-100 disabled:opacity-40">Next →</button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </>
       )}
