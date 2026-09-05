@@ -175,53 +175,62 @@ export default function CoursesPage() {
           {filterSemester ? "No courses for this semester yet." : "No courses yet."}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="text-left px-6 py-3 font-medium text-gray-600">Code</th>
-                <th className="text-left px-6 py-3 font-medium text-gray-600">Course</th>
-                <th className="text-left px-6 py-3 font-medium text-gray-600">Semester</th>
-                <th className="text-left px-6 py-3 font-medium text-gray-600">Department</th>
-                <th className="text-left px-6 py-3 font-medium text-gray-600">Teacher</th>
-                <th className="text-left px-6 py-3 font-medium text-gray-600">Schedule</th>
-                <th className="text-right px-6 py-3 font-medium text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {displayCourses.map((c) => (
-                <tr key={c._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-3">
-                    <span className="bg-indigo-100 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded">{c.code}</span>
-                  </td>
-                  <td className="px-6 py-3 font-medium text-gray-900">{c.name}</td>
-                  <td className="px-6 py-3">
-                    {c.semester ? (
-                      <span className={`text-xs px-2 py-0.5 rounded font-medium ${c.semester.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>
-                        {c.semester.name} {c.semester.academicYear}
-                      </span>
-                    ) : (
-                      <span className="text-gray-300 text-xs">—</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-3 text-gray-500">{c.department?.name}</td>
-                  <td className="px-6 py-3 text-gray-500">{c.teacher?.name ?? <span className="text-orange-400">Unassigned</span>}</td>
-                  <td className="px-6 py-3 text-gray-500">
-                    {c.schedule.map((s, i) => (
-                      <span key={i} className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded mr-1 mb-0.5">
-                        {s.day} {s.time}
-                      </span>
-                    ))}
-                  </td>
-                  <td className="px-6 py-3 text-right space-x-2">
-                    <button onClick={() => openEdit(c)} className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
-                    <button onClick={() => handleDelete(c._id)} className="text-red-500 hover:text-red-700 font-medium">Delete</button>
-                  </td>
+        <>
+          {/* Desktop table */}
+          <div className="hidden md:block bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b border-gray-100">
+                <tr>
+                  <th className="text-left px-6 py-3 font-medium text-gray-600">Code</th>
+                  <th className="text-left px-6 py-3 font-medium text-gray-600">Course</th>
+                  <th className="text-left px-6 py-3 font-medium text-gray-600">Semester</th>
+                  <th className="text-left px-6 py-3 font-medium text-gray-600">Department</th>
+                  <th className="text-left px-6 py-3 font-medium text-gray-600">Teacher</th>
+                  <th className="text-left px-6 py-3 font-medium text-gray-600">Schedule</th>
+                  <th className="text-right px-6 py-3 font-medium text-gray-600">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {displayCourses.map((c) => (
+                  <tr key={c._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-3"><span className="bg-indigo-100 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded">{c.code}</span></td>
+                    <td className="px-6 py-3 font-medium text-gray-900">{c.name}</td>
+                    <td className="px-6 py-3">{c.semester ? <span className={`text-xs px-2 py-0.5 rounded font-medium ${c.semester.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>{c.semester.name} {c.semester.academicYear}</span> : <span className="text-gray-300 text-xs">—</span>}</td>
+                    <td className="px-6 py-3 text-gray-500">{c.department?.name}</td>
+                    <td className="px-6 py-3 text-gray-500">{c.teacher?.name ?? <span className="text-orange-400">Unassigned</span>}</td>
+                    <td className="px-6 py-3 text-gray-500">{c.schedule.map((s, i) => <span key={i} className="inline-block bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded mr-1 mb-0.5">{s.day} {s.time}</span>)}</td>
+                    <td className="px-6 py-3 text-right space-x-2">
+                      <button onClick={() => openEdit(c)} className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
+                      <button onClick={() => handleDelete(c._id)} className="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {displayCourses.map((c) => (
+              <div key={c._id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="bg-indigo-100 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded">{c.code}</span>
+                      {c.semester && <span className={`text-xs px-2 py-0.5 rounded font-medium ${c.semester.isActive ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"}`}>{c.semester.name}</span>}
+                    </div>
+                    <p className="font-semibold text-gray-900 mt-1">{c.name}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{c.department?.name} · {c.teacher?.name ?? <span className="text-orange-400">Unassigned</span>}</p>
+                  </div>
+                  <div className="flex gap-3 shrink-0">
+                    <button onClick={() => openEdit(c)} className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Edit</button>
+                    <button onClick={() => handleDelete(c._id)} className="text-red-500 hover:text-red-700 font-medium text-sm">Delete</button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-1">{c.schedule.map((s, i) => <span key={i} className="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded">{s.day} {s.time}</span>)}</div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <Modal open={modalOpen} title={editing ? "Edit Course" : "Add Course"} onClose={() => setModalOpen(false)}>

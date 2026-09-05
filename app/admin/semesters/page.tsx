@@ -131,53 +131,59 @@ export default function SemestersPage() {
       ) : semesters.length === 0 ? (
         <div className="text-center py-16 text-gray-400">No semesters yet. Add your first semester.</div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
+        <>
+          <div className="hidden md:block bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 border-b border-gray-100"><tr>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">Semester</th>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">Academic Year</th>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">Start</th>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">End</th>
                 <th className="text-left px-6 py-3 font-medium text-gray-600">Status</th>
                 <th className="text-right px-6 py-3 font-medium text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {semesters.map((s) => (
-                <tr key={s._id} className={`hover:bg-gray-50 transition-colors ${s.isActive ? "bg-green-50/40" : ""}`}>
-                  <td className="px-6 py-3 font-medium text-gray-900">{s.name}</td>
-                  <td className="px-6 py-3 text-gray-500">{s.academicYear}</td>
-                  <td className="px-6 py-3 text-gray-500">{new Date(s.startDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-3 text-gray-500">{new Date(s.endDate).toLocaleDateString()}</td>
-                  <td className="px-6 py-3">
-                    {s.isActive ? (
-                      <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">
-                        <span className="w-1.5 h-1.5 bg-green-500 rounded-full inline-block" />
-                        Active
-                      </span>
-                    ) : (
-                      <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">Inactive</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-3 text-right space-x-2">
-                    {!s.isActive && (
-                      <button
-                        onClick={() => handleActivate(s._id, `${s.name} ${s.academicYear}`)}
-                        disabled={activating === s._id}
-                        className="text-green-600 hover:text-green-800 font-medium disabled:opacity-50"
-                      >
-                        {activating === s._id ? "Activating…" : "Activate"}
-                      </button>
-                    )}
-                    <button onClick={() => openEdit(s)} className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
-                    <button onClick={() => handleDelete(s._id)} className="text-red-500 hover:text-red-700 font-medium">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </tr></thead>
+              <tbody className="divide-y divide-gray-50">
+                {semesters.map((s) => (
+                  <tr key={s._id} className={`hover:bg-gray-50 ${s.isActive ? "bg-green-50/40" : ""}`}>
+                    <td className="px-6 py-3 font-medium text-gray-900">{s.name}</td>
+                    <td className="px-6 py-3 text-gray-500">{s.academicYear}</td>
+                    <td className="px-6 py-3 text-gray-500">{new Date(s.startDate).toLocaleDateString()}</td>
+                    <td className="px-6 py-3 text-gray-500">{new Date(s.endDate).toLocaleDateString()}</td>
+                    <td className="px-6 py-3">{s.isActive ? <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full"><span className="w-1.5 h-1.5 bg-green-500 rounded-full" />Active</span> : <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">Inactive</span>}</td>
+                    <td className="px-6 py-3 text-right space-x-2">
+                      {!s.isActive && <button onClick={() => handleActivate(s._id, `${s.name} ${s.academicYear}`)} disabled={activating === s._id} className="text-green-600 hover:text-green-800 font-medium disabled:opacity-50">{activating === s._id ? "Activating…" : "Activate"}</button>}
+                      <button onClick={() => openEdit(s)} className="text-indigo-600 hover:text-indigo-800 font-medium">Edit</button>
+                      <button onClick={() => handleDelete(s._id)} className="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          {/* Mobile cards */}
+          <div className="md:hidden space-y-3">
+            {semesters.map((s) => (
+              <div key={s._id} className={`bg-white rounded-xl border shadow-sm p-4 ${s.isActive ? "border-green-200" : "border-gray-100"}`}>
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-semibold text-gray-900">{s.name} {s.academicYear}</p>
+                      {s.isActive ? <span className="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-semibold px-2 py-0.5 rounded-full"><span className="w-1.5 h-1.5 bg-green-500 rounded-full" />Active</span> : <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">Inactive</span>}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">{new Date(s.startDate).toLocaleDateString()} → {new Date(s.endDate).toLocaleDateString()}</p>
+                  </div>
+                  <div className="flex flex-col gap-1.5 items-end shrink-0">
+                    {!s.isActive && <button onClick={() => handleActivate(s._id, `${s.name} ${s.academicYear}`)} disabled={activating === s._id} className="text-green-600 hover:text-green-800 font-medium text-sm disabled:opacity-50">{activating === s._id ? "Activating…" : "Activate"}</button>}
+                    <div className="flex gap-3">
+                      <button onClick={() => openEdit(s)} className="text-indigo-600 hover:text-indigo-800 font-medium text-sm">Edit</button>
+                      <button onClick={() => handleDelete(s._id)} className="text-red-500 hover:text-red-700 font-medium text-sm">Delete</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
 
       <Modal open={modalOpen} title={editing ? "Edit Semester" : "Add Semester"} onClose={() => setModalOpen(false)}>
