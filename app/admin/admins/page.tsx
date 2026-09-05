@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
 
 interface Admin { _id: string; name: string; email: string; createdAt: string; }
 
@@ -23,48 +24,27 @@ export default function AdminsPage() {
 
   useEffect(() => { load(); }, []);
 
-  function openAdd() {
-    setEditing(null);
-    setForm({ name: "", email: "", password: "" });
-    setError("");
-    setModalOpen(true);
-  }
-
-  function openEdit(a: Admin) {
-    setEditing(a);
-    setForm({ name: a.name, email: a.email, password: "" });
-    setError("");
-    setModalOpen(true);
-  }
+  function openAdd() { setEditing(null); setForm({ name: "", email: "", password: "" }); setError(""); setModalOpen(true); }
+  function openEdit(a: Admin) { setEditing(a); setForm({ name: a.name, email: a.email, password: "" }); setError(""); setModalOpen(true); }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
-    setError("");
+    setSaving(true); setError("");
     const url = editing ? `/api/admins/${editing._id}` : "/api/admins";
     const method = editing ? "PUT" : "POST";
-    const body = editing
-      ? { name: form.name, email: form.email }
-      : { name: form.name, email: form.email, password: form.password };
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
+    const body = editing ? { name: form.name, email: form.email } : { name: form.name, email: form.email, password: form.password };
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     setSaving(false);
-    if (!res.ok) { setError((await res.json()).error ?? "Failed"); return; }
-    setModalOpen(false);
-    load();
+    if (!res.ok) { const d = await res.json(); setError(d.error ?? "Failed"); toast.error(d.error ?? "Failed to save"); return; }
+    toast.success(editing ? "Admin updated" : "Admin account created");
+    setModalOpen(false); load();
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this admin account?")) return;
     const res = await fetch(`/api/admins/${id}`, { method: "DELETE" });
-    if (!res.ok) {
-      const d = await res.json();
-      alert(d.error ?? "Failed to delete");
-      return;
-    }
+    if (!res.ok) { const d = await res.json(); toast.error(d.error ?? "Failed to delete"); return; }
+    toast.success("Admin deleted");
     load();
   }
 

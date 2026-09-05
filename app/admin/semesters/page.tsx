@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
 
 interface Semester {
   _id: string;
@@ -66,15 +67,17 @@ export default function SemestersPage() {
       body: JSON.stringify(form),
     });
     setSaving(false);
-    if (!res.ok) { setError((await res.json()).error ?? "Failed"); return; }
+    if (!res.ok) { setError((await res.json()).error ?? "Failed"); toast.error("Failed to save"); return; }
+    toast.success(editing ? "Semester updated" : "Semester created");
     setModalOpen(false);
     load();
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this semester? This will not delete attendance records.")) return;
-    await fetch(`/api/semesters/${id}`, { method: "DELETE" });
-    load();
+    const res = await fetch(`/api/semesters/${id}`, { method: "DELETE" });
+    if (res.ok) { toast.success("Semester deleted"); load(); }
+    else toast.error("Failed to delete");
   }
 
   async function handleActivate(id: string, name: string) {
@@ -85,11 +88,12 @@ export default function SemestersPage() {
     const data = await res.json();
     setActivating(null);
     if (res.ok) {
+      toast.success(`✓ ${data.message}`);
       setActivateMsg(data.message);
       load();
       setTimeout(() => setActivateMsg(""), 5000);
     } else {
-      alert(data.error ?? "Failed to activate");
+      toast.error(data.error ?? "Failed to activate");
     }
   }
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
 
 interface School { _id: string; name: string; }
 interface Department { _id: string; name: string; school: School; }
@@ -26,41 +27,26 @@ export default function DepartmentsPage() {
 
   useEffect(() => { load(); }, []);
 
-  function openAdd() {
-    setEditing(null);
-    setForm({ name: "", school: schools[0]?._id ?? "" });
-    setError("");
-    setModalOpen(true);
-  }
-
-  function openEdit(d: Department) {
-    setEditing(d);
-    setForm({ name: d.name, school: d.school._id });
-    setError("");
-    setModalOpen(true);
-  }
+  function openAdd() { setEditing(null); setForm({ name: "", school: schools[0]?._id ?? "" }); setError(""); setModalOpen(true); }
+  function openEdit(d: Department) { setEditing(d); setForm({ name: d.name, school: d.school._id }); setError(""); setModalOpen(true); }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
-    setError("");
+    setSaving(true); setError("");
     const url = editing ? `/api/departments/${editing._id}` : "/api/departments";
     const method = editing ? "PUT" : "POST";
-    const res = await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
     setSaving(false);
-    if (!res.ok) { setError((await res.json()).error ?? "Failed"); return; }
-    setModalOpen(false);
-    load();
+    if (!res.ok) { const d = await res.json(); setError(d.error ?? "Failed"); toast.error(d.error ?? "Failed to save"); return; }
+    toast.success(editing ? "Department updated" : "Department added");
+    setModalOpen(false); load();
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this department?")) return;
-    await fetch(`/api/departments/${id}`, { method: "DELETE" });
-    load();
+    const res = await fetch(`/api/departments/${id}`, { method: "DELETE" });
+    if (res.ok) { toast.success("Department deleted"); load(); }
+    else toast.error("Failed to delete");
   }
 
   return (

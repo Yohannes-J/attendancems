@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
 
 interface School { _id: string; name: string; }
 interface Department { _id: string; name: string; school: School; }
@@ -123,15 +124,17 @@ export default function StudentsPage() {
       body: JSON.stringify(form),
     });
     setSaving(false);
-    if (!res.ok) { setError((await res.json()).error ?? "Failed"); return; }
+    if (!res.ok) { setError((await res.json()).error ?? "Failed"); toast.error((await res.clone().json()).error ?? "Failed to save"); return; }
+    toast.success(editing ? "Student updated" : "Student registered");
     setModalOpen(false);
     load();
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this student?")) return;
-    await fetch(`/api/students/${id}`, { method: "DELETE" });
-    load();
+    const res = await fetch(`/api/students/${id}`, { method: "DELETE" });
+    if (res.ok) { toast.success("Student deleted"); load(); }
+    else toast.error("Failed to delete");
   }
 
   // ── Derived data ──────────────────────────────────────────────

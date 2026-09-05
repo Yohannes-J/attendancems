@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Modal from "@/components/Modal";
+import toast from "react-hot-toast";
 
 interface School { _id: string; name: string; }
 interface Department { _id: string; name: string; school: School; }
@@ -117,15 +118,17 @@ export default function CoursesPage() {
       body: JSON.stringify(body),
     });
     setSaving(false);
-    if (!res.ok) { setError((await res.json()).error ?? "Failed"); return; }
+    if (!res.ok) { setError((await res.json()).error ?? "Failed"); toast.error("Failed to save course"); return; }
+    toast.success(editing ? "Course updated" : "Course added");
     setModalOpen(false);
     load();
   }
 
   async function handleDelete(id: string) {
     if (!confirm("Delete this course?")) return;
-    await fetch(`/api/courses/${id}`, { method: "DELETE" });
-    load();
+    const res = await fetch(`/api/courses/${id}`, { method: "DELETE" });
+    if (res.ok) { toast.success("Course deleted"); load(); }
+    else toast.error("Failed to delete");
   }
 
   // Filter courses by selected semester
